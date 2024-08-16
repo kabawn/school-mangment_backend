@@ -1,48 +1,44 @@
-// src/server.js
 const express = require('express');
 const connectDB = require('./config/db');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const authRoutes = require('./routes/authRoutes');
-const auth = require('./middleware/auth');
-const authRole = require('./middleware/role');
-const classRoutes = require('./routes/classRoutes');
-const userRoutes = require('./routes/userRoutes');
-const path = require('path');  // Add this line
-
-dotenv.config();
-
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Load environment variables from .env file
+require('dotenv').config();
 
-app.use('/api/auth', authRoutes);
-app.use('/api/classes', classRoutes);
-app.use('/api/users', userRoutes);
-// Serve static files from the 'uploads' directory
-console.log('Serving static files from:', path.join(__dirname, 'uploads'));
-
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
-app.get('/api/protected', auth, (req, res) => {
-    res.send({ message: 'You have access to this protected route!', user: req.user });
-});
-
-app.post('/api/grades', auth, authRole('teacher'), (req, res) => {
-    // Logic to add grades
-    res.send({ message: 'Grade added successfully!' });
-});
-// Connect Database
+// Connect to MongoDB
 connectDB();
 
-// Routes
-app.get('/', (req, res) => {
-  res.send('Welcome to the School Management System API');
-});
+// Middleware to parse JSON
+app.use(express.json());
 
-// Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Import Routes
+const adminRouter = require('./routes/admin');
+const studentsRouter = require('./routes/students');
+const teachersRouter = require('./routes/teachers');
+const classesRouter = require('./routes/classes');
+const parentsRouter = require('./routes/parents');
+const gradesRouter = require('./routes/grades');
+const attendanceRouter = require('./routes/attendance');
+
+// Use Routes
+app.use('/admin', adminRouter);
+app.use('/students', studentsRouter);
+app.use('/teachers', teachersRouter);
+app.use('/classes', classesRouter);
+app.use('/parents', parentsRouter);
+app.use('/grades', gradesRouter);
+app.use('/attendance', attendanceRouter);
+app.use('/uploads', express.static('uploads'));
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send({ message: 'Something went wrong!' });
+  });
+
+  app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+  });
+  
+// Start the Server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

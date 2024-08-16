@@ -1,24 +1,52 @@
 const mongoose = require('mongoose');
-const User = require('./User');
 
-// Teacher Schema extending User
 const teacherSchema = new mongoose.Schema({
-    "profile.teacherInfo": {  // Note the nesting under 'profile'
-        employeeID: { type: String, unique: true },
-        subjectsTaught: [{ type: String }],
-        classesTaught: [{ type: String }],
-        experienceYears: { type: Number },
-        qualifications: [{ type: String }],
-        employmentDate: { type: Date },
-        previousEmployment: [{ school: String, years: Number }],
-        weeklyTimetable: [{ day: String, periods: [String] }],
-        officeHours: { type: String },
-        extracurricularSupervision: [{ type: String }],
-        professionalDevelopment: [{ course: String, date: Date }],
-        evaluationRecords: [{ date: Date, evaluation: String }],
-    }
+  firstName: {
+    type: String,
+    required: true
+  },
+  lastName: {
+    type: String,
+    required: true
+  },
+  dob: {
+    type: Date,
+    required: true
+  },
+  gender: {
+    type: String,
+    enum: ['Male', 'Female', 'Other'],
+    required: true
+  },
+  address: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  phone: {
+    type: String,
+    required: true
+  },
+  hireDate: {
+    type: Date,
+    default: Date.now
+  },
+  specialization: {
+    type: String,
+    required: true
+  },
+  classes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Class'
+  }],
+  profileImage: {
+    type: String,
+    required: false // Optional, because not every teacher might have an image initially
+  }
 });
 
-const Teacher = User.discriminator('teacher', teacherSchema);
-
-module.exports = Teacher;
+module.exports = mongoose.model('Teacher', teacherSchema);

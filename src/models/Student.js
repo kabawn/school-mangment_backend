@@ -1,33 +1,49 @@
 const mongoose = require('mongoose');
-const User = require('./User');
 
 const studentSchema = new mongoose.Schema({
-    "profile.studentInfo": {  // Ensure that studentInfo is nested under profile
-        studentID: { type: String, unique: true },
-        class: { type: String },
-        section: { type: String },
-        rollNumber: { type: String },
-        subjects: [{ type: String }],
-        academicYear: { type: String },
-        grades: [{ subject: String, grade: String }],
-        attendanceRecord: [{ date: Date, status: String }],
-        guardian: {
-            name: String,
-            phone: String,
-            email: String,
-        },
-        medicalConditions: [{ type: String }],
-        enrollmentDate: { type: Date },
-        extracurricularActivities: [{ type: String }],
-        disciplinaryRecords: [{ date: Date, incident: String }],
-        transportationDetails: {
-            busNumber: String,
-            pickupTime: String,
-            dropoffTime: String,
-        },
-    }
+  firstName: {
+    type: String,
+    required: true
+  },
+  lastName: {
+    type: String,
+    required: true
+  },
+  dob: {
+    type: Date,
+    required: true
+  },
+  gender: {
+    type: String,
+    enum: ['Male', 'Female', 'Other'],
+    required: true
+  },
+  address: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  phone: {
+    type: String,
+    required: true
+  },
+  class: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Class',
+    required: true
+  },
+  parent: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Parent'
+  },
+  profileImage: {
+    type: String,
+    required: false // Optional, because not every student might have an image initially
+  }
 });
 
-const Student = User.discriminator('student', studentSchema);
-
-module.exports = Student;
+module.exports = mongoose.model('Student', studentSchema);

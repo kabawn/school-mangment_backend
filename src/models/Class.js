@@ -1,21 +1,26 @@
-// src/models/Class.js
 const mongoose = require('mongoose');
 
 const classSchema = new mongoose.Schema({
-    className: {
-        type: String,
-        required: true,
-    },
-    subjects: [{
-        subjectName: { type: String, required: true },
-        teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
-    }],
-    students: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    }],
+  className: {
+    type: String,
+    required: true
+  },
+  section: {
+    type: String,
+    required: true
+  },
+  gradeLevel: {
+    type: Number,
+    required: true
+  },
+  teachers: [{  // Changed from teacher to teachers, and it's now an array
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Teacher'
+  }],
+  students: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Student'
+  }]
 });
 
-const Class = mongoose.model('Class', classSchema);
-
-module.exports = Class;
+module.exports = mongoose.model('Class', classSchema);

@@ -1,11 +1,12 @@
-// src/middleware/role.js
-const authRole = (role) => {
+const roleMiddleware = (roles) => {
     return (req, res, next) => {
-        if (req.user.role !== role) {
-            return res.status(403).send({ error: 'Access denied' });
-        }
-        next();
+      // Check if the user's role is in the allowed roles for this route
+      if (!roles.includes(req.user.role)) {
+        return res.status(403).json({ message: 'Access denied' });
+      }
+      next();
     };
-};
-
-module.exports = authRole;
+  };
+  
+  module.exports = roleMiddleware;
+  
